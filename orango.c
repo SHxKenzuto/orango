@@ -20,12 +20,26 @@ typedef enum {
     TOKEN_END
 } TokenType;
 
+typedef enum{
+    false,
+    true
+} Boolean;
+
+
+
+
 // Definizione della struttura Token per la lista linkata
 typedef struct Token {
     TokenType type;
     char* value;
     struct Token* next; // Puntatore al next nodo nella lista
 } Token;
+
+typedef struct tokenReturn{
+    char* esito;
+    char* messaggio;
+    Token* token;
+};
 
 typedef struct Node {
     TokenType type;
@@ -86,7 +100,7 @@ Token* tokenize(char* input) {
         
         if (strcmp(tokenValue, "=") == 0) type = TOKEN_ASSIGN;
         else if(strcmp(tokenValue,"+" == 0)) type = TOKEN_PLUS;
-        else if (isdigit(tokenValue[0])) type = TOKEN_NUMBER;
+        else if (isdigit(tokenValue[0])) type = TOKEN_NUMBER; //gestire i char
         else type = TOKEN_IDENTIFIER;
         
         append(tokens,tokenValue,type);
@@ -176,6 +190,15 @@ Node* expr(Token* current_token){
         return n;
     }
 
+}
+
+Boolean strcmpDecente(char* expected, char* actual){
+    if (strcmp(expected, actual) == 0)
+    {
+        return true;
+    }
+    return false;
+    
 }
 
 
