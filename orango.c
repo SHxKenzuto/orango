@@ -26,8 +26,6 @@ typedef enum{
 } Boolean;
 
 
-
-
 // Definizione della struttura Token per la lista linkata
 typedef struct Token {
     TokenType type;
@@ -35,9 +33,9 @@ typedef struct Token {
     struct Token* next; // Puntatore al next nodo nella lista
 } Token;
 
-typedef struct tokenReturn{
-    char* esito;
-    char* messaggio;
+typedef struct TokenReturn{
+    Boolean esito;
+    Byte messaggio;
     Token* token;
 };
 
@@ -114,14 +112,21 @@ Token* tokenize(char* input) {
 }
 
 
-Token* eat(Token* token, TokenType expected_type){
+TokenReturn* eat(TokenReturn* res, TokenType expected_type){
+    //TokenReturn* res = malloc(sizeof(TokenReturn));
+    res->token = NULL;
+    res->esito = false;
+    Token* token = res->token;
     if(token->type == expected_type){
         Token* next = token->next;
+        res->token = next;
+        res->esito = true,
         free(token);
-        return next; 
-    } else {  
-        return NULL;
+        return res; 
     }
+    res->messaggio = 0x0000;  
+    return res;
+    
 }
 
 // Funzione per creare un nodo dell'AST
@@ -134,74 +139,110 @@ Node* create_ast_node(TokenType type, char* value, Node* left, Node* right) {
     return node;
 }
 
-Node* factor(Token* current_token){
-    Node* n = NULL;
-    switch (current_token->type)
+Node* factor(TokenReturn* res){
+    if (res->esito)
     {
-    case TOKEN_NUMBER:
-        char* num = strdup(current_token->value);
-        current_token = eat(current_token, TOKEN_NUMBER);
-        if(current_token != NULL){
-            n = create_ast_node(TOKEN_NUMBER, strdup(num), NULL, NULL);
-        }     
-        break;
-    case TOKEN_LPAREN:
-        current_token = eat(current_token, TOKEN_LPAREN);
-        if(current_token != NULL){
-            n = expr(current_token);
+        Node* n = NULL;
+        Token* current_token = res->token;
+        switch (current_token->type)
+        {
+        case TOKEN_NUMBER:
+            char* num = strdup(current_token->value);
+            res = eat(res, TOKEN_NUMBER);
+            if(res->esito){
+                n = create_ast_node(TOKEN_NUMBER, strdup(num), NULL, NULL);
+            }     
+            break;
+        case TOKEN_LPAREN:
+            res = eat(res, TOKEN_LPAREN);
+            if(res->esito){
+                n = expr(res);
+            }
+            res = eat(res, TOKEN_RPAREN);
+            else{
+                printf(">DEBUG FACTOR: %x", res->messaggio);
+                n = NULL;
+            }
+        default:
+            break;
         }
-        current_token = eat(current_token, TOKEN_RPAREN);
-        if(current_token == NULL){
-            n = NULL;
+        if (!(res->esito))
+        {
+            printf(">DEBUG FACTOR: %x", res->messaggio);
         }
-    default:
-        break;
+        
+        return n;   
     }
-    return n;
+    printf(">DEBUG FACTOR: %x", res->messaggio);
+
+    return NULL;
+    
+    
 }
 
-Node* term(Token* current_token){
-    Node* n = factor(current_token);
-    Token* op = current_token;
-    if(op->type == TOKEN_MULT){
-        current_token = eat(current_token, TOKEN_MULT);
-    }else if(op -> type == TOKEN_DIV){
-        current_token = eat(current_token, TOKEN_DIV);
-    }
-    if(current_token != NULL){
-        return create_ast_node(op->type, "*/", term(current_token), n);
-    }else{
+Node* term(TokenReturn* res){
+    if (res->esito)
+    {
+        Node* n = factor(current_token);
+        TokenType op = res->token->type;
+        if(op == TOKEN_MULT){
+            res = eat(res, TOKEN_MULT);
+        }else if(op  == TOKEN_DIV){
+            res = eat(res, TOKEN_DIV);
+        }
+        if(res->esito){
+            return create_ast_node(op, "*/", term(res), n);
+        }
+        printf(">DEBUG TERM: %x", res->messaggio);
         return n;
+        
     }
+    printf(">DEBUG TERM: %x", res->messaggio);
+    return NULL;
+    
+    
 
 }
 
-Node* expr(Token* current_token){
-    Node* n = term(current_token);
-    Token* op = current_token;
-    if(op->type == TOKEN_PLUS){
-        current_token = eat(current_token, TOKEN_PLUS);
-    }else if(op -> type == TOKEN_MINUS){
-        current_token = eat(current_token, TOKEN_MINUS);
-    }
-    if(current_token != NULL){
-        return create_ast_node(op->type, "+-", expr(current_token), n);
-    }else{
+Node* expr(TokenReturn* res){
+    if (res->esito)
+    {
+        Node* n = term(res);
+        TokenType op = res->token->type;
+        if(op == TOKEN_PLUS){
+            res = eat(res, TOKEN_PLUS);
+        }else if(op  == TOKEN_MINUS){
+            res = eat(res, TOKEN_MINUS);
+        }
+        if(res->esito){
+            return create_ast_node(op, "+-", expr(res), n);
+        }
+        printf(">DEBUG EXPR: %x", res->messaggio);
         return n;
+        
     }
+    printf(">DEBUG EXPR: %x", res->messaggio);
+    return NULL;
+    
+    
 
 }
 
 Boolean strcmpDecente(char* expected, char* actual){
-    if (strcmp(expected, actual) == 0)
-    {
-        return true;
+    while (*expected != '\0' && *actual != '\0') {
+        if (*expected != *actual) {
+            return false; // I caratteri non corrispondono
+        }
+        expected++;
+        actual++;
     }
-    return false;
+
+    // Se entrambe le stringhe hanno raggiunto il terminatore nullo '\0', sono uguali.
+    return true;
     
 }
 
-
+//RIFATTORZZARE
 // Funzione per costruire l'AST
 Node* parse(Token* tokens) {
     Token* current_token = tokens;
