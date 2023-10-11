@@ -3,9 +3,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-
 typedef enum {
     TOKEN_IDENTIFIER,
     TOKEN_NUMBER,
@@ -17,7 +14,8 @@ typedef enum {
     TOKEN_ASSIGN,
     TOKEN_LPAREN,
     TOKEN_RPAREN,
-    TOKEN_END
+    TOKEN_END,
+    TOKEN_FAILURE
 } TokenType;
 
 typedef enum{
@@ -33,11 +31,11 @@ typedef struct Token {
     struct Token* next; // Puntatore al next nodo nella lista
 } Token;
 
-typedef struct TokenReturn{
+typedef struct TokenReturn {
     Boolean esito;
-    Byte messaggio;
+    unsigned char messaggio;
     Token* token;
-};
+} TokenReturn;
 
 typedef struct Node {
     TokenType type;
@@ -62,7 +60,7 @@ Token* append(Token* testa, char* valore, TokenType type) {
         return nuovo_nodo;
     } else {
         Token* temp = testa;
-        while (temp->next != NULL) {
+        while (temp->next) {
             temp = temp->next;
         }
         temp->next = nuovo_nodo;
@@ -88,25 +86,21 @@ Token* pop(Token* testa) {
     return temp;
 }
 
+Boolean strcmpDecente(char*, char*);
 // Funzione per tokenizzare l'input
 Token* tokenize(char* input) {
     Token* tokens = NULL;
     char* tokenValue = strtok(input, " ");
-    
     while (tokenValue != NULL) {
         TokenType type;
-        
-        if (strcmp(tokenValue, "=") == 0) type = TOKEN_ASSIGN;
-        else if(strcmp(tokenValue,"+" == 0)) type = TOKEN_PLUS;
+        if (strcmpDecente(tokenValue, "=")) type = TOKEN_ASSIGN;
+        else if(strcmpDecente(tokenValue,"+")) type = TOKEN_PLUS;
+        else if(strcmpDecente(tokenValue,"*")) type = TOKEN_MULT;
         else if (isdigit(tokenValue[0])) type = TOKEN_NUMBER; //gestire i char
         else type = TOKEN_IDENTIFIER;
-        
-        append(tokens,tokenValue,type);
-        
+        tokens = append(tokens,tokenValue,type);
         tokenValue = strtok(NULL, " ");
     }
-    
-    append(tokens,NULL,TOKEN_END);
     
     return tokens;
 }
@@ -114,17 +108,16 @@ Token* tokenize(char* input) {
 
 TokenReturn* eat(TokenReturn* res, TokenType expected_type){
     //TokenReturn* res = malloc(sizeof(TokenReturn));
-    res->token = NULL;
     res->esito = false;
     Token* token = res->token;
-    if(token->type == expected_type){
-        Token* next = token->next;
-        res->token = next;
+    if(token != NULL && token->type == expected_type){
+        res->token = token->next;
         res->esito = true,
         free(token);
+        res->messaggio = 0x0000;  
         return res; 
     }
-    res->messaggio = 0x0000;  
+    res->messaggio = 0x0001;  
     return res;
     
 }
@@ -138,9 +131,9 @@ Node* create_ast_node(TokenType type, char* value, Node* left, Node* right) {
     node->right = right;
     return node;
 }
-
+Node* expr(TokenReturn*);
 Node* factor(TokenReturn* res){
-    if (res->esito)
+    if (res->esito && res->token!=NULL)
     {
         Node* n = NULL;
         Token* current_token = res->token;
@@ -159,21 +152,22 @@ Node* factor(TokenReturn* res){
                 n = expr(res);
             }
             res = eat(res, TOKEN_RPAREN);
-            else{
-                printf(">DEBUG FACTOR: %x", res->messaggio);
+            if(!(res->esito && res->token!=NULL)){
+                printf(">DEBUG FACTOR: %x\n", res->messaggio);
                 n = NULL;
             }
         default:
+            res = eat(res, TOKEN_FAILURE);
             break;
         }
-        if (!(res->esito))
+        if (!(res->esito && res->token!=NULL))
         {
-            printf(">DEBUG FACTOR: %x", res->messaggio);
+            printf(">DEBUG FACTOR: %x\n", res->messaggio);
         }
         
         return n;   
     }
-    printf(">DEBUG FACTOR: %x", res->messaggio);
+    printf(">DEBUG FACTOR: %x\n", res->messaggio);
 
     return NULL;
     
@@ -181,48 +175,43 @@ Node* factor(TokenReturn* res){
 }
 
 Node* term(TokenReturn* res){
-    if (res->esito)
+    Node* n = factor(res);
+    if (n!= NULL && res->esito && res->token!=NULL)
     {
-        Node* n = factor(current_token);
         TokenType op = res->token->type;
-        if(op == TOKEN_MULT){
-            res = eat(res, TOKEN_MULT);
-        }else if(op  == TOKEN_DIV){
+        res = eat(res, TOKEN_MULT);
+       if(!(res->esito)){
             res = eat(res, TOKEN_DIV);
         }
-        if(res->esito){
+        if(res->esito && res->token!=NULL){
             return create_ast_node(op, "*/", term(res), n);
-        }
-        printf(">DEBUG TERM: %x", res->messaggio);
-        return n;
-        
+        }      
     }
-    printf(">DEBUG TERM: %x", res->messaggio);
-    return NULL;
+    printf(">DEBUG TERM: %x\n", res->messaggio);
+    return n;
     
     
 
 }
 
 Node* expr(TokenReturn* res){
-    if (res->esito)
+    Node* n = term(res);
+    if (n != NULL && res->token!=NULL)
     {
-        Node* n = term(res);
         TokenType op = res->token->type;
-        if(op == TOKEN_PLUS){
-            res = eat(res, TOKEN_PLUS);
-        }else if(op  == TOKEN_MINUS){
+        res = eat(res, TOKEN_PLUS);
+        if(!(res->esito)){
             res = eat(res, TOKEN_MINUS);
         }
-        if(res->esito){
+        if(res->esito && res->token!=NULL){
             return create_ast_node(op, "+-", expr(res), n);
         }
-        printf(">DEBUG EXPR: %x", res->messaggio);
+        printf(">DEBUG EXPR: %x\n", res->messaggio);
         return n;
         
     }
-    printf(">DEBUG EXPR: %x", res->messaggio);
-    return NULL;
+    printf(">DEBUG EXPR: %x\n", res->messaggio);
+    return n;
     
     
 
@@ -244,33 +233,55 @@ Boolean strcmpDecente(char* expected, char* actual){
 
 //RIFATTORZZARE
 // Funzione per costruire l'AST
-Node* parse(Token* tokens) {
-    Token* current_token = tokens;
-    Node* n = NULL;
-    switch (current_token->type){
-    case TOKEN_IDENTIFIER:
-        char* id = strdup(current_token->value);
-        current_token = eat(current_token,TOKEN_IDENTIFIER);
-        if(current_token != NULL){
-            current_token = eat(current_token, TOKEN_ASSIGN);
-            if(current_token != NULL){
-                n = create_ast_node(TOKEN_ASSIGN, "=", id, expr(current_token));
+Node* parse(TokenReturn* res) {
+    if(res->esito && res->token!=NULL){
+        Token* current_token = res->token;
+        Node* n = NULL;
+        switch (current_token->type){
+        case TOKEN_IDENTIFIER:
+            char* id = strdup(current_token->value);
+            res = eat(res,TOKEN_IDENTIFIER);
+            if(res->esito && res->token!=NULL){
+                res = eat(res, TOKEN_ASSIGN);
+                if(res->esito && res->token!=NULL){
+                    n = create_ast_node(TOKEN_ASSIGN, "=", create_ast_node(TOKEN_IDENTIFIER,id,NULL,NULL), expr(res));
+                } else {
+                    printf(">DEBUG EXPR: %x\n", res->messaggio);
+                }
+            }else{
+                printf(">DEBUG EXPR: %x\n", res->messaggio);
             }
+            break;
+        case TOKEN_NUMBER:
+        case TOKEN_LPAREN:
+            n = expr(res);  
+        default:
+            break;
         }
-        break;
-    case TOKEN_NUMBER:
-    case TOKEN_LPAREN:
-        n = expr(current_token);  
-    default:
-        break;
+        return n;
     }
-    return n;
+    printf(">DEBUG EXPR: %x\n", res->messaggio);
+    return NULL;
 }
-
+int interpret(Node*);
 // Funzione per interpretare l'AST
-void interpret(Node* ast) {
-
+int interpret(Node* ast) {
+    int res = 0;
+    switch(ast->type){
+        case TOKEN_MULT:
+            res = interpret(ast->left) * interpret(ast->right);
+            break;
+        case TOKEN_PLUS:
+            res =  interpret(ast->left) + interpret(ast->right);
+            break;
+        case TOKEN_NUMBER:
+            res = atoi(ast->value);
+        default:
+            break;
+    }
+    return res;
 }
+
 
 
 
@@ -280,15 +291,17 @@ Token* current_token;
 
 int main() {
     char buffer[256];
-    
     printf(">");
     fgets(buffer, sizeof(buffer), stdin);
-    
+
     Token* tokens = tokenize(buffer);
-    Node* ast = parse(tokens);
+    TokenReturn* res = (TokenReturn*) malloc(sizeof(TokenReturn));
+    res->token = tokens;
+    res->esito = true;
+    Node* ast = parse(res);
     
-    if (ast != NULL) {
-        interpret(ast);
+    if (ast != NULL && res->esito) {
+        printf("result: %d\n",interpret(ast));
     } else {
         printf("Istruzione non valida!\n");
     }
