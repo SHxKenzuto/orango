@@ -14,3 +14,16 @@ Boolean strcmpDecente(char *expected, char *actual)
     // Se entrambe le stringhe hanno raggiunto il terminatore nullo '\0', sono uguali.
     return (*expected == '\0' && *actual == '\0');
 }
+
+Boolean isNumber(const char *num)
+{
+    while (*num != '\0')
+    {
+        if (!isdigit((unsigned char)*num))
+        {
+            return FALSE;
+        }
+        num++;
+    }
+    return TRUE;
+}

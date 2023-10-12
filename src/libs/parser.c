@@ -108,12 +108,12 @@ Node *parse(TokenReturn *res)
                 }
                 else
                 {
-                    printf(">DEBUG EXPR: %02hhx\n", res->messaggio);
+                    printf(">DEBUG PARSE: %02hhx\n", res->messaggio);
                 }
             }
             else
             {
-                printf(">DEBUG EXPR: %02hhx\n", res->messaggio);
+                printf(">DEBUG PARSE: %02hhx\n", res->messaggio);
             }
             break;
         case TOKEN_NUMBER:

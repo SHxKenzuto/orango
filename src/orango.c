@@ -6,6 +6,7 @@ int main()
     char buffer[256];
     printf(">");
     fgets(buffer, sizeof(buffer), stdin);
+    buffer[strcspn(buffer, "\n")] = 0;
 
     Token *tokens = tokenize(buffer);
     TokenReturn *res = (TokenReturn *)malloc(sizeof(TokenReturn));

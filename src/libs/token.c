@@ -65,8 +65,8 @@ Token *tokenize(char *input)
             type = TOKEN_PLUS;
         else if (strcmpDecente(tokenValue, "*"))
             type = TOKEN_MULT;
-        else if (isdigit(tokenValue[0]))
-            type = TOKEN_NUMBER; // gestire i char
+        else if (isNumber(tokenValue))
+            type = TOKEN_NUMBER;
         else
             type = TOKEN_IDENTIFIER;
         tokens = append(tokens, tokenValue, type);

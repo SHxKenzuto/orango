@@ -2,7 +2,6 @@
 #define __TOKEN_
 
 #include <stdlib.h>
-#include <ctype.h>
 #include <string.h>
 #include "utils.h"
 
