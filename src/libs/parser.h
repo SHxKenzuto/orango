@@ -5,8 +5,8 @@
 #include "ast.h"
 
 Node *expr(TokenReturn *);
-Node *factor(TokenReturn *res);
-Node *term(TokenReturn *res);
-Node *parse(TokenReturn *res);
+Node *factor(TokenReturn *);
+Node *term(TokenReturn *);
+Node *parse(TokenReturn *);
 
 #endif

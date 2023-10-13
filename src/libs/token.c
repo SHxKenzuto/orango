@@ -63,8 +63,12 @@ Token *tokenize(char *input)
             type = TOKEN_ASSIGN;
         else if (strcmpDecente(tokenValue, "+"))
             type = TOKEN_PLUS;
+        else if (strcmpDecente(tokenValue, "-"))
+            type = TOKEN_MINUS;
         else if (strcmpDecente(tokenValue, "*"))
             type = TOKEN_MULT;
+        else if (strcmpDecente(tokenValue, "/"))
+            type = TOKEN_DIV;
         else if (isNumber(tokenValue))
             type = TOKEN_NUMBER;
         else
