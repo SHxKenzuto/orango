@@ -55,7 +55,7 @@ Token *pop(Token *testa)
 Token *tokenize(char *input)
 {
     Token *tokens = NULL;
-    char *tokenValue = strtok(input, " ");
+    char *tokenValue = strtok_decente(input);
     while (tokenValue != NULL)
     {
         TokenType type;
@@ -74,7 +74,7 @@ Token *tokenize(char *input)
                 else
             type = TOKEN_IDENTIFIER;
                 tokens = append(tokens, tokenValue, type);
-        tokenValue = strtok(NULL, " ");
+        tokenValue = strtok_decente(NULL);
     }
     return tokens;
 }
