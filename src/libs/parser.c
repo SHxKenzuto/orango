@@ -11,7 +11,12 @@ Node *factor(TokenReturn *res)
             char *num = strdup(current_token->value);
             res = eat(res, TOKEN_NUMBER);
             if (res->esito)
+            {
                 n = create_ast_node(TOKEN_NUMBER, strdup(num), NULL, NULL);
+                free(num);
+            }
+            if(res->token != NULL && !is_operator(res->token->type))
+                eat(res,TOKEN_FAILURE);
             break;
         case TOKEN_LPAREN:
             res = eat(res, TOKEN_LPAREN);
@@ -38,24 +43,20 @@ Node *term(TokenReturn *res)
     TokenType op;
     char* tokenVal;
     Node *tmp;
-	if(n != NULL)
+	while(res->esito && res->token != NULL && (res->token->type == TOKEN_MULT || res->token->type == TOKEN_DIV))
 	{
-		while(res->esito && res->token != NULL && (res->token->type == TOKEN_MULT || res->token->type == TOKEN_DIV))
-		{
-			op = res->token->type;
-            tokenVal = strdup(res->token->value);
-			if(op == TOKEN_MULT) 
-				res = eat(res, TOKEN_MULT);
-            else if(op == TOKEN_DIV)   
-				res = eat(res, TOKEN_DIV);
-			if(res->esito)
-            {   
-                tmp = factor(res);
-                if(res->esito)
-                    n = create_ast_node(op, tokenVal, n, tmp);
-            }
-				
-		}
+		op = res->token->type;
+        tokenVal = strdup(res->token->value);
+		if(op == TOKEN_MULT) 
+			res = eat(res, TOKEN_MULT);
+        else if(op == TOKEN_DIV)   
+			res = eat(res, TOKEN_DIV);
+        tmp = factor(res);
+        if(res->esito)
+        {
+            n = create_ast_node(op, tokenVal, n, tmp);
+            free(tokenVal);
+        }	
 	}
     printf(">DEBUG TERM: %02hhx\n", res->messaggio);
 	return n;
@@ -63,31 +64,27 @@ Node *term(TokenReturn *res)
 
 Node *expr(TokenReturn *res)
 {
-	Node *n = term(res);
+    Node *n = term(res);
     TokenType op;
     char* tokenVal;
     Node *tmp;
-	if(n != NULL)
-	{
-		while(res->esito && res->token != NULL && (res->token->type == TOKEN_PLUS || res->token->type == TOKEN_MINUS))
-		{
-			op = res->token->type;
-            tokenVal = strdup(res->token->value);
-			if(op == TOKEN_PLUS) 
-				res = eat(res, TOKEN_PLUS);
-            else if(op == TOKEN_MINUS)   
-				res = eat(res, TOKEN_MINUS);
-			if(res->esito)
-			{   
-                tmp = term(res);
-                if(res->esito)
-                    n = create_ast_node(op, tokenVal, n, tmp);
-            }
-				
-		}
-	}
+    while(res->esito && res->token != NULL && (res->token->type == TOKEN_PLUS || res->token->type == TOKEN_MINUS)) 
+    {
+        op = res->token->type;
+        tokenVal = strdup(res->token->value);
+        if(op == TOKEN_PLUS) 
+			res = eat(res, TOKEN_PLUS);
+        else if(op == TOKEN_MINUS)   
+			res = eat(res, TOKEN_MINUS);
+        tmp = term(res);
+        if(res->esito)
+        {
+            n = create_ast_node(op, tokenVal, n, tmp);
+            free(tokenVal);
+        }
+    }
     printf(">DEBUG EXPR: %02hhx\n", res->messaggio);
-	return n;
+    return n;
 }
 
 
@@ -107,7 +104,10 @@ Node *parse(TokenReturn *res)
             {
                 res = eat(res, TOKEN_ASSIGN);
                 if (res->esito && res->token != NULL)
+                {
                     n = create_ast_node(TOKEN_ASSIGN, "=", create_ast_node(TOKEN_IDENTIFIER, id, NULL, NULL), expr(res));
+                    free(id);
+                }
             }
             break;
         case TOKEN_NUMBER:

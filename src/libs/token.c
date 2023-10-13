@@ -71,9 +71,9 @@ Token *tokenize(char *input)
             type = TOKEN_DIV;
         else if (isNumber(tokenValue))
             type = TOKEN_NUMBER;
-        else
+                else
             type = TOKEN_IDENTIFIER;
-        tokens = append(tokens, tokenValue, type);
+                tokens = append(tokens, tokenValue, type);
         tokenValue = strtok(NULL, " ");
     }
     return tokens;
@@ -94,4 +94,9 @@ TokenReturn *eat(TokenReturn *res, TokenType expected_type)
     }
     res->messaggio = 0x0001;
     return res;
+}
+
+int is_operator(TokenType type)
+{
+    return type == TOKEN_PLUS || type == TOKEN_MINUS || type == TOKEN_MULT || type == TOKEN_DIV;
 }
