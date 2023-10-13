@@ -1,5 +1,5 @@
-#include "parser.h"
-#include "interpreter.h"
+#include "libs/parser.h"
+#include "libs/interpreter.h"
 
 int main()
 {
