@@ -1,6 +1,6 @@
 # Variabili del compilatore e delle opzioni
 CC = gcc
-CFLAGS = -Wall -Ilibs
+CFLAGS = -Wall -Isrc/libs
 
 # Lista di dipendenze: file .o creati dai file .c nella cartella libs
 LIB_OBJS = $(patsubst src/libs/%.c, src/libs/%.o, $(wildcard src/libs/*.c))
