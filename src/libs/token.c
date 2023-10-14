@@ -69,14 +69,18 @@ Token *tokenize(char *input)
             type = TOKEN_MULT;
         else if (strcmpDecente(tokenValue, "/"))
             type = TOKEN_DIV;
+        else if (strcmpDecente(tokenValue, "("))
+            type = TOKEN_LPAREN;
+        else if (strcmpDecente(tokenValue, ")"))
+            type = TOKEN_RPAREN;
         else if (isNumber(tokenValue))
             type = TOKEN_NUMBER;
-                else
+        else
             type = TOKEN_IDENTIFIER;
-                tokens = append(tokens, tokenValue, type);
+        tokens = append(tokens, tokenValue, type);
         tokenValue = strtok_decente(NULL);
     }
-    return tokens;
+        return tokens;
 }
 
 TokenReturn *eat(TokenReturn *res, TokenType expected_type)
@@ -98,5 +102,5 @@ TokenReturn *eat(TokenReturn *res, TokenType expected_type)
 
 int is_operator(TokenType type)
 {
-    return type == TOKEN_PLUS || type == TOKEN_MINUS || type == TOKEN_MULT || type == TOKEN_DIV;
+    return type == TOKEN_PLUS || type == TOKEN_MINUS || type == TOKEN_MULT || type == TOKEN_DIV || type == TOKEN_RPAREN;
 }

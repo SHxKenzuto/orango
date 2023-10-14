@@ -23,8 +23,7 @@ Node *factor(TokenReturn *res)
             if (res->esito)
                 n = expr(res);
             res = eat(res, TOKEN_RPAREN);
-            if (!(res->esito && res->token != NULL))
-                n = NULL;
+            break;
         default:
             res = eat(res, TOKEN_FAILURE);
             break;
@@ -113,6 +112,7 @@ Node *parse(TokenReturn *res)
         case TOKEN_NUMBER:
         case TOKEN_LPAREN:
             n = expr(res);
+            break;
         default:
             break;
         }
