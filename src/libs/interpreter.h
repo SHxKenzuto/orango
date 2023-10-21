@@ -2,7 +2,8 @@
 #define __INTERPRETER_
 
 #include "ast.h"
+#include "vars.h"
 
-int interpret(Node *);
+int interpret(Node *, TokenType);
 
 #endif

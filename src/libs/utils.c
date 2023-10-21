@@ -30,7 +30,7 @@ Boolean isNumber(const char *num)
 }
 
 Boolean is_op(char c) {
-    return c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')';
+    return c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')' || c=='=';
 }
 
 char* strtok_decente(char *str) {
