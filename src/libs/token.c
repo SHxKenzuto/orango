@@ -55,7 +55,7 @@ Token *pop(Token *testa)
 Token *tokenize(char *input)
 {
     Token *tokens = NULL;
-    char *tokenValue = strtok(input, " ");
+    char *tokenValue = strtok_decente(input);
     while (tokenValue != NULL)
     {
         TokenType type;
@@ -63,16 +63,24 @@ Token *tokenize(char *input)
             type = TOKEN_ASSIGN;
         else if (strcmpDecente(tokenValue, "+"))
             type = TOKEN_PLUS;
+        else if (strcmpDecente(tokenValue, "-"))
+            type = TOKEN_MINUS;
         else if (strcmpDecente(tokenValue, "*"))
             type = TOKEN_MULT;
+        else if (strcmpDecente(tokenValue, "/"))
+            type = TOKEN_DIV;
+        else if (strcmpDecente(tokenValue, "("))
+            type = TOKEN_LPAREN;
+        else if (strcmpDecente(tokenValue, ")"))
+            type = TOKEN_RPAREN;
         else if (isNumber(tokenValue))
             type = TOKEN_NUMBER;
         else
             type = TOKEN_IDENTIFIER;
         tokens = append(tokens, tokenValue, type);
-        tokenValue = strtok(NULL, " ");
+        tokenValue = strtok_decente(NULL);
     }
-    return tokens;
+        return tokens;
 }
 
 TokenReturn *eat(TokenReturn *res, TokenType expected_type)
@@ -90,4 +98,9 @@ TokenReturn *eat(TokenReturn *res, TokenType expected_type)
     }
     res->messaggio = 0x0001;
     return res;
+}
+
+int is_operator(TokenType type)
+{
+    return type == TOKEN_PLUS || type == TOKEN_MINUS || type == TOKEN_MULT || type == TOKEN_DIV || type == TOKEN_RPAREN;
 }

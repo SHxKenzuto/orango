@@ -16,7 +16,8 @@ int main()
 
     if (ast != NULL && res->esito)
     {
-        printf("result: %d\n", interpret(ast));
+        print_tree(ast,0);
+        printf("\nresult: %d\n", interpret(ast));
     }
     else
     {
