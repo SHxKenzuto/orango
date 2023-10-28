@@ -3,7 +3,14 @@
 
 #include "ast.h"
 #include "vars.h"
+#include "vars.h"
 
-int interpret(Node *, TokenType);
+typedef struct InterpretReturn
+{
+    VarType type;
+    void *value;
+} InterpretReturn;
+
+InterpretReturn* interpret(Node *, TokenType);
 
 #endif

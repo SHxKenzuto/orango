@@ -18,6 +18,7 @@ typedef struct Var
 }Var;
 
 void allocateVar(char*);
+void free_vars(Var*);
 
 
 #endif

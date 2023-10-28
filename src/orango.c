@@ -1,5 +1,6 @@
 #include "libs/parser.h"
 #include "libs/interpreter.h"
+#include "libs/vars.h"
 
 
 
@@ -37,18 +38,27 @@ int main()
             if (ast != NULL && res->esito)
             {
             print_tree(ast,0);
-            printf("\nresult: %d\n", interpret(ast, (TokenType)NULL));
+            InterpretReturn* res = (interpret(ast, (TokenType)NULL));
+            if (res != NULL)
+            {
+                printf("\nresult: %d\n", *(int*)(res->value));//commento 1
+            }
+            
+            
+            
             }
             else
             {
-            printf("Istruzione non valida!\n");
+                printf("Istruzione non valida!\n");
             }
+            
         }
 
-        }
+    }
         
     
-    
+    printf(">fuori dal while principale\n");
     // Liberare la memoria qui se necessario
+    free_vars(globalVar);
     return 0;
 }
