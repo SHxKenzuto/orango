@@ -3,19 +3,38 @@
 #include <stdio.h>
 
 extern Var* globalVar;
-void allocateVar(char* id){
+extern Var*(*allocateVar)(char*);
 
-    if (!(globalVar->type==INIT))
+Var* allocateVarInit(char* id){
+    globalVar->id = id;
+    allocateVar = &allocateVarNext;
+    return globalVar;
+
+}
+
+Var* allocateVarNext(char* id){
+    Var* tempVar = cerca_var(id);
+    if (tempVar==NULL)
     {
-
-        Var* tempVar = malloc(sizeof(Var));
+        tempVar = malloc(sizeof(Var));
         tempVar->next = globalVar;
         globalVar =  tempVar;
+        globalVar->id = id;  
     }
-    globalVar->id = id;
+    return tempVar;   
+}
 
+Var* cerca_var(char* id){
+    Var* tempVar = globalVar;
+    while (tempVar!=NULL && !strcmpDecente(id, tempVar->id))
+    {
+        tempVar = tempVar->next;
+    }
+    return tempVar;
     
 }
+
+
 
 void free_vars(Var* testa){
     

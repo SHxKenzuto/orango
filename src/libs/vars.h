@@ -1,6 +1,8 @@
 #ifndef __VARS_
 #define __VARS_
 
+#include "utils.h"
+
 typedef enum{
     INIT,
     INTEGER,
@@ -17,7 +19,10 @@ typedef struct Var
     struct Var* next;
 }Var;
 
-void allocateVar(char*);
+//void allocateVar(char*);
+Var* allocateVarInit(char*);
+Var* allocateVarNext(char*);
+Var* cerca_var(char*);
 void free_vars(Var*);
 
 

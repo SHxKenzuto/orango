@@ -5,9 +5,12 @@
 
 
 Var* globalVar;
+Var* currentMemLoc;
+Var*(*allocateVar)(char*);
 
 int main()
 {
+    allocateVar = &allocateVarInit;
     globalVar = malloc(sizeof(Var));
     globalVar->type = INIT;
     globalVar->next = NULL;

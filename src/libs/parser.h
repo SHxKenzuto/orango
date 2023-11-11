@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include "ast.h"
+#include "vars.h"
 
 Node *expr(TokenReturn *);
 Node *factor(TokenReturn *);

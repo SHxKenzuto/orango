@@ -29,8 +29,13 @@ Boolean isNumber(const char *num)
     return TRUE;
 }
 
+int is_operator(TokenType type)
+{
+    return type == TOKEN_PLUS || type == TOKEN_MINUS || type == TOKEN_MULT || type == TOKEN_DIV || type == TOKEN_RPAREN;
+}
+
 Boolean is_op(char c) {
-    return c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')' || c=='=';
+    return c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')' || c=='=' || c==';';
 }
 
 char* strtok_decente(char *str) {

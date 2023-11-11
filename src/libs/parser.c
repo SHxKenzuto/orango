@@ -96,26 +96,47 @@ Node *parse(TokenReturn *res)
         Node *n = NULL;
         switch (current_token->type)
         {
-        case TOKEN_IDENTIFIER:
-            char *id = strdup(current_token->value);
-            res = eat(res, TOKEN_IDENTIFIER);
-            if (res->esito && res->token != NULL)
-            {
-                res = eat(res, TOKEN_ASSIGN);
+            case TOKEN_IDENTIFIER:
+                printf("Trovato TOKEN_IDENTIFIER\n");
+                char *id = strdup(current_token->value);
+                res = eat(res, TOKEN_IDENTIFIER);
                 if (res->esito && res->token != NULL)
                 {
-                    n = create_ast_node(TOKEN_ASSIGN, "=", create_ast_node(TOKEN_IDENTIFIER, id, NULL, NULL), expr(res));
+                    n=create_ast_node(TOKEN_IDENTIFIER, id, NULL, NULL);
                     free(id);
+                    printf("DEBUG res token type: %d\n",res->token->type);
+                    if (res->token->type==TOKEN_ASSIGN)
+                    {
+                        printf("Trovato TOKEN_ASSIGN\n");
+                        res = eat(res, TOKEN_ASSIGN);
+                        if (res->esito && res->token != NULL)
+                        {
+                            n = create_ast_node(TOKEN_ASSIGN, "=", n, expr(res));
+                        }
+                    }
+                    else if(is_operator(res->token->type)){
+                        Var* searchedVar = cerca_var(n->value);
+                        if (searchedVar!=NULL)
+                        {
+                            
+                            n =create_ast_node(res->token->type, "op",create_ast_node(TOKEN_NUMBER, *(char*)(searchedVar),NULL,NULL),parse(eat(res,TOKEN_PLUS)));
+                        }
+                        
+                    }
+                    
+                    
                 }
-            }
-            break;
-        case TOKEN_NUMBER:
-        case TOKEN_LPAREN:
-            n = expr(res);
-            break;
-        default:
-            break;
+                break;
+            case TOKEN_NUMBER:
+            case TOKEN_LPAREN:
+                n = expr(res);
+                break;
+            
+            default:
+                break;
+
         }
+        eat(res,TOKEN_TERM);
         printf(">DEBUG PARSE: %02hhx\n", res->messaggio);
         return n;
     }

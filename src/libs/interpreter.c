@@ -4,6 +4,8 @@
 InterpretReturn* interpret(Node *ast, TokenType fatherType)
 {
     extern Var* globalVar;
+    extern Var* currentMemLoc;
+    extern Var*(*allocateVar)(char*);
     InterpretReturn* res = malloc(sizeof(InterpretReturn));
     int* lValue;
     int* rValue;
@@ -60,9 +62,9 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
         printf(">start token assign\n");
         interpret(ast->left, ast->type);
         InterpretReturn* resTemp = interpret(ast->right,ast->type);
-        globalVar->value = resTemp->value;
-        globalVar->type = resTemp->type;
-        printf(">globalVar in interpret: Id: %s\t Val: %d\n", globalVar->id, *(int*)globalVar->value);
+        currentMemLoc->value = resTemp->value;
+        currentMemLoc->type = resTemp->type;
+        printf(">globalVar in interpret: Id: %s\t Val: %d\n", currentMemLoc->id, *(int*)currentMemLoc->value);
         res = NULL;
         break;
     case TOKEN_IDENTIFIER:
@@ -71,15 +73,27 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
         {
             printf(">father token assign\n");
             //allocazione var
-            allocateVar(ast->value);
+            currentMemLoc = (*allocateVar)(ast->value);
+            res = NULL;
 
         }
-        else
+        else if (fatherType == (TokenType)NULL)
         {
             printf(">father else\n");
-            //recupero var
+            Var* searchedVar = cerca_var(ast->value);
+            if (searchedVar!=NULL)
+            {
+                res->value = searchedVar->value;
+                res->type = searchedVar->type;
+            }
+            
         }
-        res = NULL;
+        
+        
+            
+            //recupero var
+        
+        
         
         
     default:
