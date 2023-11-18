@@ -14,6 +14,8 @@ int main()
     globalVar = malloc(sizeof(Var));
     globalVar->type = INIT;
     globalVar->next = NULL;
+    globalVar->id = "\0";
+
     //globalVar->value=malloc(sizeof(int));
     //*(int*)globalVar->value=2;
     Boolean goOn = TRUE;
@@ -36,7 +38,7 @@ int main()
             TokenReturn *res = (TokenReturn *)malloc(sizeof(TokenReturn));
             res->token = tokens;
             res->esito = TRUE;
-            Node *ast = parse(res);
+            Node *ast = main_parse(res);
 
             if (ast != NULL && res->esito)
             {

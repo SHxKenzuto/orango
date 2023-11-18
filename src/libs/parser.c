@@ -22,6 +22,22 @@ Node *factor(TokenReturn *res)
                 n = expr(res);
             res = eat(res, TOKEN_RPAREN);
             break;
+        case TOKEN_IDENTIFIER:
+            Var* searchedVar = cerca_var(current_token->value);
+            if (searchedVar!=NULL){
+                res = eat(res, TOKEN_IDENTIFIER);
+                if (res->esito)
+                {
+                    char str[12];
+                    
+                    int numero = *(int*) searchedVar->value;
+                    sprintf(str, "%d", numero);
+                    char *num = strdup(str);                
+                    n = create_ast_node(TOKEN_NUMBER, strdup(num), NULL,NULL);
+                    free(num);
+                }
+            }
+            break;
         default:
             res = eat(res, TOKEN_FAILURE);
             break;
@@ -51,7 +67,7 @@ Node *term(TokenReturn *res)
         tmp = factor(res);
         if(res->esito)
         {
-            n = create_ast_node(op, tokenVal, n, tmp);
+            n = create_ast_node(op, strdup(tokenVal), n, tmp);
             free(tokenVal);
         }	
 	}
@@ -76,7 +92,7 @@ Node *expr(TokenReturn *res)
         tmp = term(res);
         if(res->esito)
         {
-            n = create_ast_node(op, tokenVal, n, tmp);
+            n = create_ast_node(op, strdup(tokenVal), n, tmp);
             free(tokenVal);
         }
     }
@@ -95,49 +111,72 @@ Node *parse(TokenReturn *res)
         switch (current_token->type)
         {
             case TOKEN_IDENTIFIER:
-                printf("Trovato TOKEN_IDENTIFIER\n");
-                char *id = strdup(current_token->value);
-                res = eat(res, TOKEN_IDENTIFIER);
-                if (res->esito && res->token != NULL)
-                {
-                    n=create_ast_node(TOKEN_IDENTIFIER, id, NULL, NULL);
-                    free(id);
-                    printf("DEBUG res token type: %d\n",res->token->type);
-                    if (res->token->type==TOKEN_ASSIGN)
-                    {
-                        printf("Trovato TOKEN_ASSIGN\n");
-                        res = eat(res, TOKEN_ASSIGN);
-                        if (res->esito && res->token != NULL)
-                        {
-                            n = create_ast_node(TOKEN_ASSIGN, "=", n, expr(res));
-                        }
-                    }
-                    else if(is_operator(res->token->type)){
-                        Var* searchedVar = cerca_var(n->value);
-                        if (searchedVar!=NULL)
-                        {
-                            
-                            n =create_ast_node(res->token->type, "op", create_ast_node(TOKEN_NUMBER, (char*)(searchedVar->value),NULL,NULL),parse(eat(res,TOKEN_PLUS)));
-                        }
-                        
-                    }
-                    
-                    
-                }
+                n = id_parse(res);
                 break;
             case TOKEN_NUMBER:
             case TOKEN_LPAREN:
                 n = expr(res);
                 break;
-            
             default:
                 break;
-
-        }
-        eat(res,TOKEN_TERM);
+        } 
         printf(">DEBUG PARSE: %02hhx\n", res->messaggio);
         return n;
     }
     printf(">DEBUG EXPR: %02hhx\n", res->messaggio);
     return NULL;
+}
+
+Node* var_expr(TokenReturn* res){
+    Node* n = NULL;
+    if(res->token->type == TOKEN_NUMBER)
+    {
+        n = expr(res);
+    }
+    else
+    {
+        char *id = strdup(res->token->value);
+        Var* searchedVar = cerca_var(id);
+        if(searchedVar != NULL)
+        {
+            if(res->esito && res->token != NULL)
+            {
+                n = expr(res);
+            }
+        } 
+    }
+    return n;
+}
+
+Node* id_parse(TokenReturn* res){
+    Node* n = NULL;
+    char *id = strdup(res->token->value);
+    Var* searchedVar = cerca_var(id);
+    if(searchedVar == NULL)
+    {
+        res = eat(res, TOKEN_IDENTIFIER);
+        if (res->esito && res->token != NULL)
+        {
+            n = create_ast_node(TOKEN_IDENTIFIER, id, NULL, NULL);
+            free(id);
+            if (res->token->type==TOKEN_ASSIGN)
+            {
+                res = eat(res, TOKEN_ASSIGN);
+                if (res->esito && res->token != NULL)
+                {
+                    n = create_ast_node(TOKEN_ASSIGN, "=", n, var_expr(res));
+                }
+            }
+        }
+    }else
+    {
+        n = var_expr(res);
+    }
+    return n;
+}
+
+Node* main_parse(TokenReturn* res){
+    Node* parse_tree = parse(res);
+    eat(res,TOKEN_TERM);
+    return parse_tree;
 }

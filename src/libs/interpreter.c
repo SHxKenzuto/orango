@@ -30,7 +30,6 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
         res->type = INTEGER;
         break;
     case TOKEN_PLUS:
-        printf(">start token plus\n");
         res->value = malloc(sizeof(int));//commento 1
         lValue = (int*)(interpret(ast->left, ast->type)->value);//commento 2
         rValue = (int*)(interpret(ast->right, ast->type)->value);//commento 2
@@ -38,7 +37,6 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
         free(rValue);//commento 2
         free(lValue);//commento 2
         res->type = INTEGER;
-        printf(">end token plus\n");
         break;
     case TOKEN_MINUS:
         res->value = malloc(sizeof(int));//commento 1
@@ -50,15 +48,12 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
         res->type = INTEGER;
         break;
     case TOKEN_NUMBER:
-        printf(">start token number\n");
         res->value = malloc(sizeof(int));//commento 1
         int atoiRes =atoi(ast->value);
         *(int*)(res->value) = atoiRes;//commento 3
         res->type = INTEGER;
-        printf(">end token number\n");
         break;
     case TOKEN_ASSIGN:
-        printf(">start token assign\n");
         interpret(ast->left, ast->type);
         InterpretReturn* resTemp = interpret(ast->right,ast->type);
         currentMemLoc->value = resTemp->value;
@@ -67,10 +62,8 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
         res = NULL;
         break;
     case TOKEN_IDENTIFIER:
-        printf(">start token identifer\n");
         if (fatherType == TOKEN_ASSIGN)
         {
-            printf(">father token assign\n");
             //allocazione var
             currentMemLoc = (*allocateVar)(ast->value);
             res = NULL;
@@ -78,7 +71,6 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
         }
         else if (fatherType == (TokenType)NULL)
         {
-            printf(">father else\n");
             Var* searchedVar = cerca_var(ast->value);
             if (searchedVar!=NULL)
             {
