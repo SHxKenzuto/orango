@@ -3,7 +3,6 @@
 // Funzione per interpretare l'AST
 InterpretReturn* interpret(Node *ast, TokenType fatherType)
 {
-    extern Var* globalVar;
     extern Var* currentMemLoc;
     extern Var*(*allocateVar)(char*);
     InterpretReturn* res = malloc(sizeof(InterpretReturn));
@@ -64,7 +63,7 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
         InterpretReturn* resTemp = interpret(ast->right,ast->type);
         currentMemLoc->value = resTemp->value;
         currentMemLoc->type = resTemp->type;
-        printf(">globalVar in interpret: Id: %s\t Val: %d\n", currentMemLoc->id, *(int*)currentMemLoc->value);
+        printf(">currentMemLoc in interpret: Id: %s\t Val: %d\n", currentMemLoc->id, *(int*)currentMemLoc->value);
         res = NULL;
         break;
     case TOKEN_IDENTIFIER:

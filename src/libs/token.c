@@ -104,3 +104,8 @@ TokenReturn *eat(TokenReturn *res, TokenType expected_type)
     return res;
 }
 
+int is_operator(TokenType type)
+{
+    return type == TOKEN_PLUS || type == TOKEN_MINUS || type == TOKEN_MULT || type == TOKEN_DIV || type == TOKEN_RPAREN;
+}
+

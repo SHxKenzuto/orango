@@ -15,8 +15,6 @@ Node *factor(TokenReturn *res)
                 n = create_ast_node(TOKEN_NUMBER, strdup(num), NULL, NULL);
                 free(num);
             }
-            if(res->token != NULL && !is_operator(res->token->type))
-                eat(res,TOKEN_FAILURE);
             break;
         case TOKEN_LPAREN:
             res = eat(res, TOKEN_LPAREN);
@@ -70,7 +68,7 @@ Node *expr(TokenReturn *res)
     while(res->esito && res->token != NULL && (res->token->type == TOKEN_PLUS || res->token->type == TOKEN_MINUS)) 
     {
         op = res->token->type;
-        tokenVal = strdup(res->token->value);
+        tokenVal = strdup(res->token->value); 
         if(op == TOKEN_PLUS) 
 			res = eat(res, TOKEN_PLUS);
         else if(op == TOKEN_MINUS)   
@@ -119,7 +117,7 @@ Node *parse(TokenReturn *res)
                         if (searchedVar!=NULL)
                         {
                             
-                            n =create_ast_node(res->token->type, "op",create_ast_node(TOKEN_NUMBER, *(char*)(searchedVar),NULL,NULL),parse(eat(res,TOKEN_PLUS)));
+                            n =create_ast_node(res->token->type, "op", create_ast_node(TOKEN_NUMBER, (char*)(searchedVar->value),NULL,NULL),parse(eat(res,TOKEN_PLUS)));
                         }
                         
                     }

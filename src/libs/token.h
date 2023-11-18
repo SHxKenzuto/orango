@@ -43,6 +43,7 @@ void free_all(Token *testa);
 Token *pop(Token *testa);
 Token *tokenize(char *input);
 TokenReturn *eat(TokenReturn *res, TokenType expected_type);
+int is_operator(TokenType);
 
 
 #endif
