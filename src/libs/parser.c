@@ -28,8 +28,7 @@ Node *factor(TokenReturn *res)
                 res = eat(res, TOKEN_IDENTIFIER);
                 if (res->esito)
                 {
-                    char str[12];
-                    
+                    char str[12]; //Da gestire dinamicamente rispetto alla piattaforma     
                     int numero = *(int*) searchedVar->value;
                     sprintf(str, "%d", numero);
                     char *num = strdup(str);                
@@ -127,6 +126,7 @@ Node *parse(TokenReturn *res)
     return NULL;
 }
 
+//Parser per espressioni che coinvolgono TOKEN_IDENTIFIER
 Node* var_expr(TokenReturn* res){
     Node* n = NULL;
     if(res->token->type == TOKEN_NUMBER)
@@ -148,6 +148,7 @@ Node* var_expr(TokenReturn* res){
     return n;
 }
 
+//Parser per istruzioni che iniziano con TOKEN_IDENTIFIER
 Node* id_parse(TokenReturn* res){
     Node* n = NULL;
     char *id = strdup(res->token->value);
@@ -175,6 +176,7 @@ Node* id_parse(TokenReturn* res){
     return n;
 }
 
+//Entrypoint parser
 Node* main_parse(TokenReturn* res){
     Node* parse_tree = parse(res);
     eat(res,TOKEN_TERM);
