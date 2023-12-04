@@ -29,8 +29,9 @@ Boolean isNumber(const char *num)
     return TRUE;
 }
 
+
 Boolean is_op(char c) {
-    return c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')';
+    return c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')' || c=='=' || c==';';
 }
 
 char* strtok_decente(char *str) {

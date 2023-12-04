@@ -75,6 +75,10 @@ Token *tokenize(char *input)
             type = TOKEN_RPAREN;
         else if (isNumber(tokenValue))
             type = TOKEN_NUMBER;
+        else if (strcmpDecente(tokenValue, ";"))
+            type=TOKEN_TERM;
+
+        
         else
             type = TOKEN_IDENTIFIER;
         tokens = append(tokens, tokenValue, type);
@@ -104,3 +108,4 @@ int is_operator(TokenType type)
 {
     return type == TOKEN_PLUS || type == TOKEN_MINUS || type == TOKEN_MULT || type == TOKEN_DIV || type == TOKEN_RPAREN;
 }
+

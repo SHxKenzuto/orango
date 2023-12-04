@@ -18,7 +18,8 @@ typedef enum
     TOKEN_LPAREN,
     TOKEN_RPAREN,
     TOKEN_END,
-    TOKEN_FAILURE
+    TOKEN_FAILURE,
+    TOKEN_TERM
 } TokenType;
 
 // Definizione della struttura Token per la lista linkata
@@ -42,6 +43,7 @@ void free_all(Token *testa);
 Token *pop(Token *testa);
 Token *tokenize(char *input);
 TokenReturn *eat(TokenReturn *res, TokenType expected_type);
-int is_operator(TokenType type);
+int is_operator(TokenType);
+
 
 #endif

@@ -1,26 +1,92 @@
 #include "interpreter.h"
 
 // Funzione per interpretare l'AST
-int interpret(Node *ast)
+InterpretReturn* interpret(Node *ast, TokenType fatherType)
 {
-    int res = 0;
+    extern Var* currentMemLoc;
+    extern Var*(*allocateVar)(char*);
+    InterpretReturn* res = malloc(sizeof(InterpretReturn));
+    int* lValue;
+    int* rValue;
     switch (ast->type)
     {
     case TOKEN_MULT:
-        res = interpret(ast->left) * interpret(ast->right);
+        
+        res->value = malloc(sizeof(int));//commento 1 
+        lValue = (int*)(interpret(ast->left, ast->type)->value);//commento 2
+        rValue = (int*)(interpret(ast->right, ast->type)->value);//commento 2
+        *(int*)res->value = (*lValue * *rValue);//commento 3
+        free(rValue);//commento 2
+        free(lValue);//commento 2
+        res->type = INTEGER;
         break;
     case TOKEN_DIV:
-        res = (int) (interpret(ast->left) / interpret(ast->right));
+        res->value = malloc(sizeof(int));//commento 1
+        lValue = (int*)(interpret(ast->left, ast->type)->value);//commento 2
+        rValue = (int*)(interpret(ast->right, ast->type)->value);//commento 2
+        *(int*)res->value = ((int) (*lValue / *rValue));//commento 3
+        free(rValue);//commento 2
+        free(lValue);//commento 2
+        res->type = INTEGER;
         break;
     case TOKEN_PLUS:
-        res = interpret(ast->left) + interpret(ast->right);
+        res->value = malloc(sizeof(int));//commento 1
+        lValue = (int*)(interpret(ast->left, ast->type)->value);//commento 2
+        rValue = (int*)(interpret(ast->right, ast->type)->value);//commento 2
+        *(int*)res->value = (*lValue + *rValue);//commento 3
+        free(rValue);//commento 2
+        free(lValue);//commento 2
+        res->type = INTEGER;
         break;
     case TOKEN_MINUS:
-        res = interpret(ast->left) - interpret(ast->right);
+        res->value = malloc(sizeof(int));//commento 1
+        lValue = (int*)(interpret(ast->left, ast->type)->value);//commento 2
+        rValue = (int*)(interpret(ast->right, ast->type)->value);//commento 2
+        *(int*)res->value = (*lValue - *rValue);//commento 3
+        free(rValue);//commento 2
+        free(lValue);//commento 2
+        res->type = INTEGER;
         break;
     case TOKEN_NUMBER:
-        res = atoi(ast->value);
+        res->value = malloc(sizeof(int));//commento 1
+        int atoiRes =atoi(ast->value);
+        *(int*)(res->value) = atoiRes;//commento 3
+        res->type = INTEGER;
         break;
+    case TOKEN_ASSIGN:
+        interpret(ast->left, ast->type);
+        InterpretReturn* resTemp = interpret(ast->right,ast->type);
+        currentMemLoc->value = resTemp->value;
+        currentMemLoc->type = resTemp->type;
+        printf(">currentMemLoc in interpret: Id: %s\t Val: %d\n", currentMemLoc->id, *(int*)currentMemLoc->value);
+        res = NULL;
+        break;
+    case TOKEN_IDENTIFIER:
+        if (fatherType == TOKEN_ASSIGN)
+        {
+            //allocazione var
+            currentMemLoc = (*allocateVar)(ast->value);
+            res = NULL;
+
+        }
+        else if (fatherType == (TokenType)NULL)
+        {
+            Var* searchedVar = cerca_var(ast->value);
+            if (searchedVar!=NULL)
+            {
+                res->value = searchedVar->value;
+                res->type = searchedVar->type;
+            }
+            
+        }
+        
+        
+            
+            //recupero var
+        
+        
+        
+        
     default:
         break;
     }

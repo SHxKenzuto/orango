@@ -8,7 +8,7 @@
 
 Boolean strcmpDecente(const char *, const char *);
 Boolean isNumber(const char *);
-Boolean is_op(char c);
-char *strtok_decente(char *str);
+Boolean is_op(char);
+char *strtok_decente(char *);
 
 #endif
