@@ -43,11 +43,18 @@ void free_vars(Var* testa){
     {
         
         temp = testa;
-        printf(">Liberando %s = %d\n", temp->id, *(int*)temp->value);//commento 2
+        
         testa = testa->next;
-        free(temp->id);
-        free(temp->value);
+
+        if (temp->type != INIT)
+        {
+            free(temp->value);
+            free(temp->id); 
+            printf(">Liberando %s = %d\n", temp->id, *(int*)temp->value);//commento 2
+        }
+            
         free(temp);
+        
     }
     printf(">Variabili liberate\n");
 
