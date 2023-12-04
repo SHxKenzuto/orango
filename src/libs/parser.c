@@ -35,6 +35,8 @@ Node *factor(TokenReturn** resP)
                     n = create_ast_node(TOKEN_NUMBER, strdup(num), NULL,NULL);
                     free(num);
                 }
+            }else{
+                *resP = eat(*resP, TOKEN_FAILURE);
             }
             break;
         default:
@@ -211,8 +213,7 @@ Node* id_parse(TokenReturn** resP){
 }
 
 //Entrypoint parser
-Node* main_parse(TokenReturn* res){
-    TokenReturn** resP = &res;
+Node* main_parse(TokenReturn** resP){
     Node* parse_tree = parse(resP);
     if((*resP)->esito == TRUE){
         eat(*resP,TOKEN_TERM);

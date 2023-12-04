@@ -39,7 +39,8 @@ int main()
             TokenReturn *res = (TokenReturn *)malloc(sizeof(TokenReturn));
             res->token = tokens;
             res->esito = TRUE;
-            Node *ast = main_parse(res);
+            TokenReturn** resP = &res;
+            Node *ast = main_parse(resP);
 
             if (ast != NULL && res->esito)
             {
