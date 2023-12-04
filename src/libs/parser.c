@@ -171,7 +171,37 @@ Node* id_parse(TokenReturn* res){
         }
     }else
     {
-        n = var_expr(res);
+        TokenReturn* tempRes = malloc(sizeof(TokenReturn));
+        memcpy(tempRes,res, sizeof(TokenReturn));
+        tempRes->token = malloc(sizeof(Token));
+        memcpy(tempRes->token, res->token, sizeof(Token));
+        res = eat(res, TOKEN_IDENTIFIER);
+        if (res->esito && res->token != NULL)
+        {
+            
+            n = create_ast_node(TOKEN_IDENTIFIER, id, NULL, NULL);
+            free(id);
+            if (res->token->type==TOKEN_ASSIGN)
+            {
+                free(tempRes->token);
+                free(tempRes);
+                res = eat(res, TOKEN_ASSIGN);
+                if (res->esito && res->token != NULL)
+                {
+                    n = create_ast_node(TOKEN_ASSIGN, "=", n, var_expr(res));
+                }
+            }
+            else
+            {
+                printf(">ELSE NON ASSIGN\n");
+                n = var_expr(tempRes);
+            }
+            
+            
+            
+        }
+
+        
     }
     return n;
 }
