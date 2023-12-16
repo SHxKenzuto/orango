@@ -162,7 +162,7 @@ Node* id_parse(TokenReturn** resP){
         if ((*resP)->esito && (*resP)->token != NULL)
         {
             n = create_ast_node(TOKEN_IDENTIFIER, id, NULL, NULL);
-            free(id);
+
             if ((*resP)->token->type==TOKEN_ASSIGN)
             {
                 *resP = eat(*resP, TOKEN_ASSIGN);
@@ -185,7 +185,7 @@ Node* id_parse(TokenReturn** resP){
         {
             
             n = create_ast_node(TOKEN_IDENTIFIER, id, NULL, NULL);
-            free(id);
+            
             if ((*resP)->token->type==TOKEN_ASSIGN)
             {
                 free(tempRes->token);
@@ -209,6 +209,7 @@ Node* id_parse(TokenReturn** resP){
 
         
     }
+    free(id);
     return n;
 }
 

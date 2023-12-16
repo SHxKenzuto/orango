@@ -18,6 +18,7 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
         *(int*)res->value = (*lValue * *rValue);//commento 3
         free(rValue);//commento 2
         free(lValue);//commento 2
+        free(ast);
         res->type = INTEGER;
         break;
     case TOKEN_DIV:
@@ -27,6 +28,7 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
         *(int*)res->value = ((int) (*lValue / *rValue));//commento 3
         free(rValue);//commento 2
         free(lValue);//commento 2
+        free(ast);
         res->type = INTEGER;
         break;
     case TOKEN_PLUS:
@@ -36,6 +38,7 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
         *(int*)res->value = (*lValue + *rValue);//commento 3
         free(rValue);//commento 2
         free(lValue);//commento 2
+        free(ast);
         res->type = INTEGER;
         break;
     case TOKEN_MINUS:
@@ -45,21 +48,23 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
         *(int*)res->value = (*lValue - *rValue);//commento 3
         free(rValue);//commento 2
         free(lValue);//commento 2
+        free(ast);
         res->type = INTEGER;
         break;
     case TOKEN_NUMBER:
         res->value = malloc(sizeof(int));//commento 1
         int atoiRes =atoi(ast->value);
         *(int*)(res->value) = atoiRes;//commento 3
+        free(ast);
         res->type = INTEGER;
         break;
     case TOKEN_ASSIGN:
-        interpret(ast->left, ast->type);
         InterpretReturn* resTemp = interpret(ast->right,ast->type);
         currentMemLoc->value = resTemp->value;
         currentMemLoc->type = resTemp->type;
         printf(">currentMemLoc in interpret: Id: %s\t Val: %d\n", currentMemLoc->id, *(int*)currentMemLoc->value);
         res = NULL;
+        //free(ast);
         break;
     case TOKEN_IDENTIFIER:
         if (fatherType == TOKEN_ASSIGN)
@@ -80,7 +85,7 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
             
         }
         
-        
+        //free(ast);
             
             //recupero var
         

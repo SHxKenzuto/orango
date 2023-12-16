@@ -20,6 +20,7 @@ int main()
     //globalVar->value=malloc(sizeof(int));
     //*(int*)globalVar->value=2;
     Boolean goOn = TRUE;
+    TokenReturn *res = (TokenReturn *)malloc(sizeof(TokenReturn));
     while (goOn)
     {
         char buffer[256];
@@ -36,7 +37,7 @@ int main()
 
         else{
             Token *tokens = tokenize(buffer);
-            TokenReturn *res = (TokenReturn *)malloc(sizeof(TokenReturn));
+            
             res->token = tokens;
             res->esito = TRUE;
             TokenReturn** resP = &res;
@@ -63,6 +64,15 @@ int main()
 
     }
         
+    Token *token;
+    while (res->token!=NULL)
+    {
+        token=res->token;
+        res->token=token->next;
+        free(token);
+    }
+     
+    free(res);
     
     printf(">fuori dal while principale\n");
     // Liberare la memoria qui se necessario
