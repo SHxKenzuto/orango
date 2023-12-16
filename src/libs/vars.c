@@ -50,7 +50,7 @@ void free_vars(Var* testa){
         {
             free(temp->value);
             free(temp->id); 
-            printf(">Liberando %s = %d\n", temp->id, *(int*)temp->value);//commento 2
+            //printf(">Liberando %s = %d\n", (*temp)->id, *(int*)(*temp)->value);//commento 2
         }
             
         free(temp);

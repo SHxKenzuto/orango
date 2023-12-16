@@ -22,14 +22,26 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
         res->type = INTEGER;
         break;
     case TOKEN_DIV:
-        res->value = malloc(sizeof(int));//commento 1
+        
         lValue = (int*)(interpret(ast->left, ast->type)->value);//commento 2
         rValue = (int*)(interpret(ast->right, ast->type)->value);//commento 2
-        *(int*)res->value = ((int) (*lValue / *rValue));//commento 3
+        if(*rValue == 0){
+            res->type = ERROR;
+            char* errorMessage ="Divisione per zero, vai in Puglia a studiare"; 
+            res->value = strdup(errorMessage); //la conversione da void* a char* è implicita, ma se la espliciti si offende, sto coglione (C ONLY)
+        }
+        else
+        {
+            res->value = malloc(sizeof(int));//commento 1
+            *(int*)res->value = ((int) (*lValue / *rValue));//commento 3
+            res->type = INTEGER;
+        }
+        
+        
         free(rValue);//commento 2
         free(lValue);//commento 2
         free(ast);
-        res->type = INTEGER;
+        
         break;
     case TOKEN_PLUS:
         res->value = malloc(sizeof(int));//commento 1
@@ -59,8 +71,8 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
         res->type = INTEGER;
         break;
     case TOKEN_ASSIGN:
-        interpret(ast->left,ast->type);
-        InterpretReturn* resTemp = interpret(ast->right,ast->type);
+        interpret(ast->left,ast->type);//manda a token identifier NON CANCELLARE MAI
+        InterpretReturn* resTemp = interpret(ast->right,ast->type);//NON CANCELLARE MAI
         currentMemLoc->value = resTemp->value;
         currentMemLoc->type = resTemp->type;
         printf(">currentMemLoc in interpret: Id: %s\t Val: %d\n", currentMemLoc->id, *(int*)currentMemLoc->value);

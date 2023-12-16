@@ -188,8 +188,7 @@ Node* id_parse(TokenReturn** resP){
             
             if ((*resP)->token->type==TOKEN_ASSIGN)
             {
-                free(tempRes->token);
-                free(tempRes);
+                
                 *resP = eat(*resP, TOKEN_ASSIGN);
                 if ((*resP)->esito && (*resP)->token != NULL)
                 {
@@ -206,6 +205,8 @@ Node* id_parse(TokenReturn** resP){
             
             
         }
+        free(tempRes->token);
+        free(tempRes);
 
         
     }

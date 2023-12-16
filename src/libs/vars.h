@@ -7,7 +7,8 @@ typedef enum{
     INIT,
     INTEGER,
     STRING,
-    BOOL
+    BOOL,
+    ERROR
     
 } VarType;
 
