@@ -59,12 +59,13 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
         res->type = INTEGER;
         break;
     case TOKEN_ASSIGN:
+        interpret(ast->left,ast->type);
         InterpretReturn* resTemp = interpret(ast->right,ast->type);
         currentMemLoc->value = resTemp->value;
         currentMemLoc->type = resTemp->type;
         printf(">currentMemLoc in interpret: Id: %s\t Val: %d\n", currentMemLoc->id, *(int*)currentMemLoc->value);
         res = NULL;
-        //free(ast);
+        free(ast);
         break;
     case TOKEN_IDENTIFIER:
         if (fatherType == TOKEN_ASSIGN)
@@ -85,7 +86,7 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
             
         }
         
-        //free(ast);
+        free(ast);
             
             //recupero var
         
