@@ -28,6 +28,6 @@ Node *adoptChild(Node* parent, Node* child);
 Node *create_binary_ast_node(TokenType type, char *value, Node *left, Node *right);
 Node *get_left_child(Node* root);
 Node *get_right_child(Node* root);
-//void print_tree(Node* root, int space);
+void print_tree(Node* root, int space);
 
 #endif
