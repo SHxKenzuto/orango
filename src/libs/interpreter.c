@@ -13,8 +13,8 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
     case TOKEN_MULT:
         
         res->value = malloc(sizeof(int));//commento 1 
-        lValue = (int*)(interpret(ast->left, ast->type)->value);//commento 2
-        rValue = (int*)(interpret(ast->right, ast->type)->value);//commento 2
+        lValue = (int*)(interpret(get_left_child(ast), ast->type)->value);//commento 2
+        rValue = (int*)(interpret(get_right_child(ast), ast->type)->value);//commento 2
         *(int*)res->value = (*lValue * *rValue);//commento 3
         free(rValue);//commento 2
         free(lValue);//commento 2
@@ -23,8 +23,8 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
         break;
     case TOKEN_DIV:
         
-        lValue = (int*)(interpret(ast->left, ast->type)->value);//commento 2
-        rValue = (int*)(interpret(ast->right, ast->type)->value);//commento 2
+        lValue = (int*)(interpret(get_left_child(ast), ast->type)->value);//commento 2
+        rValue = (int*)(interpret(get_right_child(ast), ast->type)->value);//commento 2
         if(*rValue == 0){
             res->type = ERROR;
             char* errorMessage ="Divisione per zero, vai in Puglia a studiare"; 
@@ -45,8 +45,8 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
         break;
     case TOKEN_PLUS:
         res->value = malloc(sizeof(int));//commento 1
-        lValue = (int*)(interpret(ast->left, ast->type)->value);//commento 2
-        rValue = (int*)(interpret(ast->right, ast->type)->value);//commento 2
+        lValue = (int*)(interpret(get_left_child(ast), ast->type)->value);//commento 2
+        rValue = (int*)(interpret(get_right_child(ast), ast->type)->value);//commento 2
         *(int*)res->value = (*lValue + *rValue);//commento 3
         free(rValue);//commento 2
         free(lValue);//commento 2
@@ -55,8 +55,8 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
         break;
     case TOKEN_MINUS:
         res->value = malloc(sizeof(int));//commento 1
-        lValue = (int*)(interpret(ast->left, ast->type)->value);//commento 2
-        rValue = (int*)(interpret(ast->right, ast->type)->value);//commento 2
+        lValue = (int*)(interpret(get_left_child(ast), ast->type)->value);//commento 2
+        rValue = (int*)(interpret(get_right_child(ast), ast->type)->value);//commento 2
         *(int*)res->value = (*lValue - *rValue);//commento 3
         free(rValue);//commento 2
         free(lValue);//commento 2
@@ -71,8 +71,8 @@ InterpretReturn* interpret(Node *ast, TokenType fatherType)
         res->type = INTEGER;
         break;
     case TOKEN_ASSIGN:
-        interpret(ast->left,ast->type);//manda a token identifier NON CANCELLARE MAI
-        InterpretReturn* resTemp = interpret(ast->right,ast->type);//NON CANCELLARE MAI
+        interpret(get_left_child(ast),ast->type);//manda a token identifier NON CANCELLARE MAI
+        InterpretReturn* resTemp = interpret(get_right_child(ast),ast->type);//NON CANCELLARE MAI
         currentMemLoc->value = resTemp->value;
         currentMemLoc->type = resTemp->type;
         printf(">currentMemLoc in interpret: Id: %s\t Val: %d\n", currentMemLoc->id, *(int*)currentMemLoc->value);

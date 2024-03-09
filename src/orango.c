@@ -45,7 +45,7 @@ int main()
 
             if (ast != NULL && res->esito)
             {
-            print_tree(ast,0);
+            //print_tree(ast,0);
             InterpretReturn* res = (interpret(ast, (TokenType)NULL));
             if (res->type != ERROR)
             {

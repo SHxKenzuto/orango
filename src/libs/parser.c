@@ -12,7 +12,7 @@ Node *factor(TokenReturn** resP)
             *resP = eat(*resP, TOKEN_NUMBER);
             if ((*resP)->esito)
             {
-                n = create_ast_node(TOKEN_NUMBER, strdup(num), NULL, NULL);
+                n = create_binary_ast_node(TOKEN_NUMBER, strdup(num), NULL, NULL);
                 free(num);
             }
             break;
@@ -32,7 +32,7 @@ Node *factor(TokenReturn** resP)
                     int numero = *(int*) searchedVar->value;
                     sprintf(str, "%d", numero);
                     char *num = strdup(str);                
-                    n = create_ast_node(TOKEN_NUMBER, strdup(num), NULL,NULL);
+                    n = create_binary_ast_node(TOKEN_NUMBER, strdup(num), NULL,NULL);
                     free(num);
                 }
             }else{
@@ -68,7 +68,7 @@ Node *term(TokenReturn** resP)
         tmp = factor(resP);
         if((*resP)->esito)
         {
-            n = create_ast_node(op, strdup(tokenVal), n, tmp);
+            n = create_binary_ast_node(op, strdup(tokenVal), n, tmp);
             free(tokenVal);
         }	
 	}
@@ -93,7 +93,7 @@ Node *expr(TokenReturn** resP)
         tmp = term(resP);
         if((*resP)->esito)
         {
-            n = create_ast_node(op, strdup(tokenVal), n, tmp);
+            n = create_binary_ast_node(op, strdup(tokenVal), n, tmp);
             free(tokenVal);
         }
     }
@@ -161,14 +161,14 @@ Node* id_parse(TokenReturn** resP){
         *resP = eat(*resP, TOKEN_IDENTIFIER);
         if ((*resP)->esito && (*resP)->token != NULL)
         {
-            n = create_ast_node(TOKEN_IDENTIFIER, id, NULL, NULL);
+            n = create_binary_ast_node(TOKEN_IDENTIFIER, id, NULL, NULL);
 
             if ((*resP)->token->type==TOKEN_ASSIGN)
             {
                 *resP = eat(*resP, TOKEN_ASSIGN);
                 if ((*resP)->esito && (*resP)->token != NULL)
                 {
-                    n = create_ast_node(TOKEN_ASSIGN, "=", n, var_expr(resP));
+                    n = create_binary_ast_node(TOKEN_ASSIGN, "=", n, var_expr(resP));
                 }
             }else{
                *resP = eat(*resP, TOKEN_FAILURE);
@@ -184,7 +184,7 @@ Node* id_parse(TokenReturn** resP){
         if ((*resP)->esito && (*resP)->token != NULL)
         {
             
-            n = create_ast_node(TOKEN_IDENTIFIER, id, NULL, NULL);
+            n = create_binary_ast_node(TOKEN_IDENTIFIER, id, NULL, NULL);
             
             if ((*resP)->token->type==TOKEN_ASSIGN)
             {
@@ -192,7 +192,7 @@ Node* id_parse(TokenReturn** resP){
                 *resP = eat(*resP, TOKEN_ASSIGN);
                 if ((*resP)->esito && (*resP)->token != NULL)
                 {
-                    n = create_ast_node(TOKEN_ASSIGN, "=", n, var_expr(resP));
+                    n = create_binary_ast_node(TOKEN_ASSIGN, "=", n, var_expr(resP));
                 }
             }
             else
