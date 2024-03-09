@@ -62,16 +62,8 @@ void print_tree(Node* root, int space) {
         for (i = COUNT; i < space; i++) {
             printf(" ");
         }
-        printf("%s\n", root->value);
         remainingChildren = remainingChildren->next;
     }
-    
-    /*print_tree(root->right, space);
-    printf("\n");
-    for (i = COUNT; i < space; i++) {
-        printf(" ");
-    }
     printf("%s\n", root->value);
-    print_tree(root->left, space);*/
 }
 
