@@ -47,16 +47,18 @@ int main()
             {
             //print_tree(ast,0);
             InterpretReturn* res = (interpret(ast, (TokenType)NULL));
-            if (res->type != ERROR)
-            {
-                printf("\nresult: %d\n", *(int*)(res->value));//commento 1
-                free(res->value);
-                free(res);
-            }
-            else
-            {
-                printf("\nerrore: %s\n", (char*)res->value);
-                free(res);
+            if(res != NULL){
+                if (res->type != ERROR)
+                {
+                    printf("\nresult: %d\n", *(int*)(res->value));//commento 1
+                    free(res->value);
+                    free(res);
+                }
+                else
+                {
+                    printf("\nerrore: %s\n", (char*)res->value);
+                    free(res);
+                }
             }
             
             
