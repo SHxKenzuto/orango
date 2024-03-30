@@ -77,7 +77,11 @@ Token *tokenize(char *input)
             type = TOKEN_NUMBER;
         else if (strcmpDecente(tokenValue, ";"))
             type=TOKEN_TERM;
-
+        else if (strcmpDecente(tokenValue, "t") || strcmpDecente(tokenValue, "f"))
+            type=TOKEN_BOOL;
+        else if (strcmpDecente(tokenValue, "&"))
+            type=TOKEN_LAND;
+        
         
         else
             type = TOKEN_IDENTIFIER;
